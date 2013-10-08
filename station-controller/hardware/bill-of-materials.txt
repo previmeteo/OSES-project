@@ -1,0 +1,33 @@
+Open Source Environmental Sensors (OSES) project prototype / bill of materials :
+
+M1 : S7V8F3 3.3V Step-Up/Step-Down Voltage Regulator (Pololu)
+M2 : Arduino Pro Mini 328 - 3.3V/8MHz (Sparkfun)
+M3 : Telit GL865-QUAD GSM/GPRS module (MikroElektronika)
+M4 : Ultimate GPS Breakout board, version 3 (Adafruit)
+M5 : AM2302 wired temperature and humidity sensor (Aosong)
+M6 : BMP085 Barometric Pressure Sensor Breakout board (Sparkfun)
+
+IC1 : AP2161WG-7 USB switch (Diodes, Inc. / Zetex)
+IC2 : PCF8563 Real-time clock/calendar (NXP)
+
+SW1 and SW2 : SPST switches
+
+R1 : 1M
+R2 : 560K
+R3 : 47K
+R4 : 10K
+
+C1 : 33 uF
+C2 : 10uF
+C3 : 100nF
+C4 : 10uF
+C5 : 100nF
+C6 : 10pF
+
+Crystal : 32.768Khz
+
+The AP2161WG-7 (SOT25 CMS package) can be soldered on a SOT23 - DIL6 adapter.
+
+Power source : 3.5V <= VBAT <= 9V
+
+A 3.3V FTDI cable (or an equivalent device) is required to program the Arduino Pro Mini.

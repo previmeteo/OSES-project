@@ -1,0 +1,16 @@
+
+Step-by-step installation guide :
+
+1/ Download and install Arduino 1.0.x IDE from http://arduino.cc/en/main/software (tested version : 1.0.4)
+
+2/ Download LowPower library from https://github.com/rocketscream/Low-Power and copy it to libraries/LowPower (tested version : 1.30)
+
+3/ Download Rtc_Pcf8563 library from http://playground.arduino.cc/Main/RTC-PCF8563  and copy it to libraries/Rtc_Pcf8563 (tested version : 1.0.1)
+
+4/ Download Adafruit_BMP085 library from https://github.com/adafruit/Adafruit-BMP085-Library and copy it to libraries/Adafruit_BMP085 (tested revision : 4802c1b8d3)
+
+5/ Download dht library from http://playground.arduino.cc/Main/DHTLib and copy it to libraries/dht (tested version : 0.1.05)
+
+6/ Create the libraries/GL865Quad directory and copy the GL865Quad.h and GL865Quad.cpp files in it 
+
+7/ Create the libraries/MTK3339 directory and copy the MTK3339.h and MTK3339.cpp files in it 
