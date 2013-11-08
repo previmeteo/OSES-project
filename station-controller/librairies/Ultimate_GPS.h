@@ -1,13 +1,13 @@
 /*
- * File : MTK3339.h
+ * File : Ultimate_GPS.h
  *
- * Version : 0.1.0
+ * Version : 0.5.0
  *
- * Purpose : MTK3339 GPS module library for Arduino
+ * Purpose : Ultimate GPS V3 interface library for Arduino
  *
- * Company : Previmeteo
+ * Author : Previmeteo (www.previmeteo.com)
  *
- * Web site : http://oses.previmeteo.com
+ * Project web site : http://oses.previmeteo.com/
  *
  * License: GNU GPL v2 (see License.txt)
  *
@@ -19,8 +19,8 @@
 
 
 
-#ifndef MTK3339_h
-#define MTK3339_h
+#ifndef ULTIMATE_GPS_h
+#define ULTIMATE_GPS_h
 
 
 
@@ -54,13 +54,13 @@ struct Position {
 
 
 
-class MTK3339GpsModule {
+class UltimateGPS {
 
   public:
 
-    MTK3339GpsModule(HardwareSerial *gpsSerialConnection, byte onOffPin);
+    UltimateGPS(HardwareSerial *gpsSerialConnection, byte onOffPin);
 
-    MTK3339GpsModule(HardwareSerial *gpsSerialConnection, byte onOffPin, SoftwareSerial *debugSerialConnection);
+    UltimateGPS(HardwareSerial *gpsSerialConnection, byte onOffPin, SoftwareSerial *debugSerialConnection);
     
     void init(unsigned long baudRate);
     

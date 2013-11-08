@@ -1,33 +1,46 @@
 Open Source Environmental Sensors (OSES) project prototype / bill of materials :
 
-M1 : S7V8F3 3.3V Step-Up/Step-Down Voltage Regulator (Pololu)
-M2 : Arduino Pro Mini 328 - 3.3V/8MHz (Sparkfun)
-M3 : Telit GL865-QUAD GSM/GPRS module (MikroElektronika)
-M4 : Ultimate GPS Breakout board, version 3 (Adafruit)
-M5 : AM2302 wired temperature and humidity sensor (Aosong)
-M6 : BMP085 Barometric Pressure Sensor Breakout board (Sparkfun)
+# Modules : 
 
-IC1 : AP2161WG-7 USB switch (Diodes, Inc. / Zetex)
-IC2 : PCF8563 Real-time clock/calendar (NXP)
+- AM2302 Wired temperature and humidity sensor (Aosong)
+- BMP085 Barometric Pressure Sensor Breakout board (Sparkfun)
+- Ultimate GPS Breakout board, version 3 (Adafruit)
+- GPRSbee GSM/GPRS module (www.gprsbee.com)
 
-SW1 and SW2 : SPST switches
 
-R1 : 1M
-R2 : 560K
-R3 : 47K
-R4 : 10K
+# ICs :
 
-C1 : 33 uF
-C2 : 10uF
-C3 : 100nF
-C4 : 10uF
-C5 : 100nF
-C6 : 10pF
+- MCP73861 Li-Ion/Li-Po charge management controller (Microchip)
+- NCP4625 Low Dropout Regulator (ON semiconductor)
+- ATMEGA328 DIP microcontroller (Atmel)
+- AP2161WG-7 USB switch (Diodes, Inc. / Zetex)
+- PCF8563 Real-time clock/calendar (NXP)
+- 24LC1025 1024K TWI Serial EEPROM (Microchip)
 
-Crystal : 32.768Khz
+The MCP73861 (SOIC CMS package) can be soldered on a SOIC16 - DIL16 adapter.
+The NCP4625 (SOT23 package) and the AP2161WG-7 (SOT25 package) ICs can be soldered on a SOT23 - DIL6 adapter.
 
-The AP2161WG-7 (SOT25 CMS package) can be soldered on a SOT23 - DIL6 adapter.
 
-Power source : 3.5V <= VBAT <= 9V
+# other components :
 
-A 3.3V FTDI cable (or an equivalent device) is required to program the Arduino Pro Mini.
+- resistors : 1 x 1.6K, 3 x 10K, 1 x 22K, 1 x 47K, 1 x 560K, 1 x 1M
+- capacitors : 1 x 10pF, 2 x 22pF, 4 x 100nF, 2 x 1uF, 1 x 4.7uF
+- crystals : 1 x 32.768Khz, 1 x 8MHz 
+- leds : 2 x
+- switches : 2 x SPST, 1 x push button
+- connectors : 2 x 2 pins JST connectors
+
+
+# battery
+
+- 3.7V 2000mAh (or more) Li-Ion battery
+
+
+# solar panel
+
+- 1W (or more) solar panel with maximum open-circuit voltage of 10 V
+
+
+The ATMEGA328 must have been programmed, at first, with the Arduino Pro Mini 3.3V / 8MHz bootloader. 
+
+A 3.3V FTDI cable (or an equivalent device) is recommended to upload the sketches to the ATMEGA328.

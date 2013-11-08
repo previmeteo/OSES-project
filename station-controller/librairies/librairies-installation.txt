@@ -11,6 +11,8 @@ Step-by-step installation guide :
 
 5/ Download dht library from http://playground.arduino.cc/Main/DHTLib and copy it to libraries/dht (tested version : 0.1.05)
 
-6/ Create the libraries/GL865Quad directory and copy the GL865Quad.h and GL865Quad.cpp files in it 
+6/ Create the libraries/GPRSbee directory and copy the GPRSbee.h and GPRSbee.cpp files in it 
 
-7/ Create the libraries/MTK3339 directory and copy the MTK3339.h and MTK3339.cpp files in it 
+7/ Create the libraries/Ultimate_GPS directory and copy the Ultimate_GPS.h and Ultimate_GPS.cpp files in it 
+
+8/ Create the libraries/MStore_24LC1025 directory and copy the MStore_24LC1025.h and MStore_24LC1025.cpp files in it 

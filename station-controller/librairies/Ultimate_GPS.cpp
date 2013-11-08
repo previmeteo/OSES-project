@@ -1,13 +1,13 @@
 /*
- * File : MTK3339.cpp
+ * File : Ultimate_GPS.cpp
  *
- * Version : 0.1.0
+ * Version : 0.5.0
  *
- * Purpose : MTK3339 GPS module library for Arduino
+ * Purpose : Ultimate GPS V3 (http://www.adafruit.com) interface library for Arduino
  *
- * Company : Previmeteo
+ * Author : Previmeteo (www.previmeteo.com)
  *
- * Web site : http://oses.previmeteo.com
+ * Project web site : http://oses.previmeteo.com/
  *
  * License: GNU GPL v2 (see License.txt)
  *
@@ -23,11 +23,11 @@
 
 #include "SoftwareSerial.h"
 
-#include "MTK3339.h"
+#include "Ultimate_GPS.h"
 
 
 
-MTK3339GpsModule::MTK3339GpsModule(HardwareSerial *gpsSerialConnection, byte onOffPin) { 
+UltimateGPS::UltimateGPS(HardwareSerial *gpsSerialConnection, byte onOffPin) { 
   
   _gpsSerialConnection = gpsSerialConnection;
   
@@ -39,7 +39,7 @@ MTK3339GpsModule::MTK3339GpsModule(HardwareSerial *gpsSerialConnection, byte onO
 
 
 
-MTK3339GpsModule::MTK3339GpsModule(HardwareSerial *gpsSerialConnection, byte onOffPin, SoftwareSerial *debugSerialConnection) { 
+UltimateGPS::UltimateGPS(HardwareSerial *gpsSerialConnection, byte onOffPin, SoftwareSerial *debugSerialConnection) { 
   
   _gpsSerialConnection = gpsSerialConnection;
   
@@ -53,7 +53,7 @@ MTK3339GpsModule::MTK3339GpsModule(HardwareSerial *gpsSerialConnection, byte onO
 
 
 
-void MTK3339GpsModule::init(unsigned long baudRate) {
+void UltimateGPS::init(unsigned long baudRate) {
   
   pinMode(_onOffPin, OUTPUT);    
   digitalWrite(_onOffPin, LOW); 
@@ -66,7 +66,7 @@ void MTK3339GpsModule::init(unsigned long baudRate) {
 
 
 
-void MTK3339GpsModule::powerOn() {
+void UltimateGPS::powerOn() {
 
   digitalWrite(_onOffPin, HIGH);
   
@@ -76,7 +76,7 @@ void MTK3339GpsModule::powerOn() {
  
  
  
-void MTK3339GpsModule::powerOff() {
+void UltimateGPS::powerOff() {
   
   digitalWrite(_onOffPin, LOW);
   
@@ -86,7 +86,7 @@ void MTK3339GpsModule::powerOff() {
 
     
     
-void MTK3339GpsModule::configure() {
+void UltimateGPS::configure() {
   
   Serial.print("$PMTK220,1000*1F\r\n");                                       // update frequency is set to 1 Hz
   
@@ -98,8 +98,8 @@ void MTK3339GpsModule::configure() {
 
 
 
-boolean MTK3339GpsModule::acquireNewPosition(float accuracyLimit, int timeoutInS) {
-  
+boolean UltimateGPS::acquireNewPosition(float accuracyLimit, int timeoutInS) {
+    
   boolean newPositionAcquired = false;
   
   unsigned long newPositionAcquisitionStartMS;
@@ -169,9 +169,8 @@ boolean MTK3339GpsModule::acquireNewPosition(float accuracyLimit, int timeoutInS
     
     // specific treatments according to the NMEA sentence type
     
-    
-    if(newNMEASentenceReceived) {      
-      
+    if(newNMEASentenceReceived) {     
+
       if(strstr(gpsRxBuffer, "GPRMC") != NULL) {      
         
         // sentence type is GPRMC
@@ -281,7 +280,7 @@ boolean MTK3339GpsModule::acquireNewPosition(float accuracyLimit, int timeoutInS
 
 
     
-void MTK3339GpsModule::getFieldContentFromNMEASentence(char *nmeaSentence, char *fieldData, byte fieldIndex) {
+void UltimateGPS::getFieldContentFromNMEASentence(char *nmeaSentence, char *fieldData, byte fieldIndex) {
  
   char fieldDelimiter = ',';
 
@@ -336,7 +335,7 @@ void MTK3339GpsModule::getFieldContentFromNMEASentence(char *nmeaSentence, char 
     
     
  
-boolean MTK3339GpsModule::isSentenceChecksumOK(char *sentence) {
+boolean UltimateGPS::isSentenceChecksumOK(char *sentence) {
   
   boolean checkResult = false;
   
@@ -367,7 +366,7 @@ boolean MTK3339GpsModule::isSentenceChecksumOK(char *sentence) {
     
    
     
-char MTK3339GpsModule::hexCharToChar(char n) {
+char UltimateGPS::hexCharToChar(char n) {
   
     if (n >= '0' && n <= '9') return (n - '0');
     
