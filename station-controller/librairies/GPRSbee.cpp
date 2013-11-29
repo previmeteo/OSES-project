@@ -1,7 +1,7 @@
 /*
  * File : GPRSbee.cpp
  *
- * Version : 0.5.0
+ * Version : 0.5.1
  *
  * Purpose : GPRSBEE modem (http://www.gprsbee.com) interface library for Arduino
  *
@@ -11,9 +11,11 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2013/11/30
+ * Creation date : 2013/11/28
  *
  * History :
+ *
+ * - 0.5.1 : add of http requests's responses retrieval functions
  * 
  */
  
@@ -47,7 +49,7 @@ GPRSbee::GPRSbee(byte onOffPin, byte statusPin, byte rxPin, byte txPin, Software
 
 
 
-void GPRSbee::init(unsigned long baudRate) {
+void GPRSbee::init(long baudRate) {
   
   pinMode(_onOffPin, OUTPUT);    
   digitalWrite(_onOffPin, HIGH); 
@@ -141,7 +143,11 @@ void GPRSbee::activateCommunication() {
   
   requestAT(F("AT"), 2, AT_INIT_RESP_TIMOUT_IN_MS);              // required for autobaud rate detection by the modem
   
+  delay(500);
+  
   requestAT(F("ATE0"), 2, AT_DEFAULT_RESP_TIMOUT_IN_MS);         // echo desactivation
+   
+  delay(300);
   
 }
     
@@ -167,7 +173,22 @@ void GPRSbee::configure() {
    
   requestAT(F("AT+CIPSPRT=2"), 2, AT_DEFAULT_RESP_TIMOUT_IN_MS);    // tcp send / prompt configuration : do not echo '>' 
                                                                     // and do not show "SEND OK" when the data is successfully sent 
+}
 
+
+
+void GPRSbee::retrieveIMEI(char IMEIBuffer[16]) {
+
+  requestAT(F("AT+CGSN"), 2, AT_DEFAULT_RESP_TIMOUT_IN_MS);  
+  
+  for(byte i = 0 ; i < 15 ; i++) {
+  
+    IMEIBuffer[i] = _atRxBuffer[i+2];
+  
+  }
+  
+  IMEIBuffer[15] = '\0';
+  
 }
 
 
@@ -323,7 +344,7 @@ void GPRSbee::tcpClose() {
 
 
 
-void GPRSbee::echoHttpRequestInitHeaders(char *serverName, char *serverURL, const char *method) {
+void GPRSbee::echoHttpRequestInitHeaders(char *serverName, char *serverURL, char *method) {
   
   serialConnection.print(method);
   serialConnection.print(F(" "));
@@ -385,16 +406,16 @@ void GPRSbee::echoHttpPostFileRequestAdditionalHeadersPart2() {
 
 boolean GPRSbee::httpGet(char *serverName, char *serverPort, char *serverURL, byte maxNumConnectAttempts) {
 
-  // returns true if the first header of the response contains the http code : 200 
+  // returns true if the status line of the response contains the http code : 200 
 
   boolean requestSuccess = false; 
-  
-  char responseBuffer[60];
 
   boolean tcpConnectSuccess = tcpConnect(serverName, serverPort, maxNumConnectAttempts);
   
   if(tcpConnectSuccess) {
   
+    char httpResponseStatusLineBuffer[60];
+    
     requestAT(F("AT+CIPSEND"), 2, AT_CIPSEND_RESP_TIMOUT_IN_MS);
 
     echoHttpRequestInitHeaders(serverName, serverURL, "GET");
@@ -402,10 +423,10 @@ boolean GPRSbee::httpGet(char *serverName, char *serverPort, char *serverURL, by
     serialConnection.print('\n');
   
     serialConnection.print((char) 26);
+    
+    retrieveHttpResponseStatusLine(httpResponseStatusLineBuffer, sizeof(httpResponseStatusLineBuffer), HTTP_RESP_TIMOUT_IN_MS);
   
-    retrieveIncomingCharsFromLineToLine(responseBuffer, sizeof(responseBuffer), 0, 0, HTTP_RESP_TIMOUT_IN_MS);
-  
-    if(strstr(responseBuffer, "200") != NULL) requestSuccess = true; 
+    if(strstr(httpResponseStatusLineBuffer, "200") != NULL) requestSuccess = true; 
   
     tcpClose();
   
@@ -420,18 +441,18 @@ boolean GPRSbee::httpGet(char *serverName, char *serverPort, char *serverURL, by
 boolean GPRSbee::httpPostEncodedData(char *serverName, char *serverPort, char *serverURL, char *encodedData, byte maxNumConnectAttempts) {
   
   // encodedData example : "A=1&B=2&C=3" (URL encoded data)
-  // returns true if the first header of the response contains the http code : 200
+  // returns true if the status line of the response contains the http code : 200 
   
   boolean requestSuccess = false; 
   
   long encodedDataLength = 0;
   while(encodedData[encodedDataLength] != '\0') encodedDataLength++;
-  
-  char responseBuffer[80];
 
   boolean tcpConnectSuccess = tcpConnect(serverName, serverPort, maxNumConnectAttempts);
   
   if(tcpConnectSuccess) {
+  
+    char httpResponseStatusLineBuffer[60];
 
     requestAT(F("AT+CIPSEND"), 2, AT_CIPSEND_RESP_TIMOUT_IN_MS);
 
@@ -443,18 +464,16 @@ boolean GPRSbee::httpPostEncodedData(char *serverName, char *serverPort, char *s
     
     serialConnection.print((char) 26);
     
-    retrieveIncomingCharsFromLineToLine(responseBuffer, sizeof(responseBuffer), 0, 0, HTTP_RESP_TIMOUT_IN_MS);
+    retrieveHttpResponseStatusLine(httpResponseStatusLineBuffer, sizeof(httpResponseStatusLineBuffer), HTTP_RESP_TIMOUT_IN_MS);
   
-    if(strstr(responseBuffer, "200") != NULL) requestSuccess = true; 
+    if(strstr(httpResponseStatusLineBuffer, "200") != NULL) requestSuccess = true; 
   
     tcpClose();
     
 
   }
   
-
   return requestSuccess;
-  
   
 }
 
@@ -462,21 +481,21 @@ boolean GPRSbee::httpPostEncodedData(char *serverName, char *serverPort, char *s
 
 boolean GPRSbee::httpPostTextFile(char *serverName, char *serverPort, char *serverURL, char *fileContent, byte maxNumConnectAttempts) {
 
-  // returns true if the first header of the response contains the http code : 200
+  // returns true if the status line of the response contains the http code : 200 
 
   boolean requestSuccess = false; 
   
   long fileContentLength = 0;
   while(fileContent[fileContentLength] != '\0') fileContentLength++;
   
-  
-  char responseBuffer[80];
 
   boolean tcpConnectSuccess = tcpConnect(serverName, serverPort, maxNumConnectAttempts);
   
   if(tcpConnectSuccess) {
   
   
+    char httpResponseStatusLineBuffer[60];
+    
     char formFieldName[] = HTTP_POST_FILE_DEFAULT_FORM_FIELD_NAME;
     
      
@@ -509,12 +528,11 @@ boolean GPRSbee::httpPostTextFile(char *serverName, char *serverPort, char *serv
     serialConnection.print((char) 26);
     
 
-    retrieveIncomingCharsFromLineToLine(responseBuffer, sizeof(responseBuffer), 0, 2, HTTP_RESP_TIMOUT_IN_MS);
+    retrieveHttpResponseStatusLine(httpResponseStatusLineBuffer, sizeof(httpResponseStatusLineBuffer), HTTP_RESP_TIMOUT_IN_MS);
   
-    if(strstr(responseBuffer, "200") != NULL) requestSuccess = true; 
+    if(strstr(httpResponseStatusLineBuffer, "200") != NULL) requestSuccess = true; 
   
     tcpClose();
-
 
   }
   
@@ -526,13 +544,14 @@ boolean GPRSbee::httpPostTextFile(char *serverName, char *serverPort, char *serv
 
 void GPRSbee::retrieveIncomingCharsFromLineToLine(char *incomingCharsBuffer, byte incomingCharsBufferLength, byte fromLine, byte toLine, long timeOutInMS) {
 
-  // note : included from fromLine to toLine
-
-  byte numOfCharsReceived = 0;
-    
+  // note : the fromLine and toLine indexed lines are included !!!
+  
+  int numOfCharsReceived = 0;
   byte numOfLines = 0;
-    
-  unsigned long clockTimeOut = millis() + timeOutInMS;
+  
+  long clockTimeOut = millis() + timeOutInMS;
+  
+  while((millis() < clockTimeOut) && (serialConnection.available() <= 0)) delay(100);
     
   while((millis() < clockTimeOut) && (numOfLines <= toLine) && (numOfCharsReceived < (incomingCharsBufferLength - 1))) {         
       
@@ -551,28 +570,94 @@ void GPRSbee::retrieveIncomingCharsFromLineToLine(char *incomingCharsBuffer, byt
          
     }
     
+    else delay(100);
+    
   }
   
-  while(serialConnection.available() > 0) serialConnection.read();
-  
   incomingCharsBuffer[numOfCharsReceived] = '\0';
+  
+  delay(500);
+  
+  serialConnection.flush();
+  
+}
+
+
+
+void GPRSbee::retrieveHttpResponseStatusLine(char *httpResponseStatusLineBuffer, byte httpResponseStatusLineBufferLength, long timeOutInMS) {
+
+  retrieveIncomingCharsFromLineToLine(httpResponseStatusLineBuffer, httpResponseStatusLineBufferLength, 0, 0, timeOutInMS);
+  
+}
+
+
+
+void GPRSbee::retrieveHttpResponseBodyFromLineToLine(char *httpResponseBodyBuffer, byte httpResponseBodyBufferLength, 
+                                                     byte fromLine, byte toLine, long timeOutInMS) {
+
+  // note : the fromLine and toLine indexed lines are included !!!
+  
+  boolean responseBodyAvailable = false;
+  
+  int numOfResponseHeadersCharsReceived = 0;
+  int lastPosOfNewLineChar = 0;
+  
+  
+  long responseHeadersRetrieveStartMillis = millis();
+  
+  long clockTimeOut = responseHeadersRetrieveStartMillis + timeOutInMS;
+  
+  while((millis() < clockTimeOut) && (serialConnection.available() <= 0)) delay(100);
+  
+  while((millis() < clockTimeOut) && !responseBodyAvailable) {  
+  
+    if(serialConnection.available() > 0) {
+         
+      char c = serialConnection.read(); 
+         
+      if(c=='\n') {
+      
+        if((numOfResponseHeadersCharsReceived - lastPosOfNewLineChar) == 2) responseBodyAvailable = true;
+        else lastPosOfNewLineChar = numOfResponseHeadersCharsReceived;
+      
+      }
+      
+      numOfResponseHeadersCharsReceived++;
+         
+    }
+    
+    else delay(100);
+    
+  }
+  
+  long responseBodyRetrieveStartMillis = millis();
+
+
+  // now we can retrieve the response's body !!!
+
+  retrieveIncomingCharsFromLineToLine(httpResponseBodyBuffer, httpResponseBodyBufferLength, fromLine, toLine, 
+                                      timeOutInMS - (responseBodyRetrieveStartMillis - responseHeadersRetrieveStartMillis));
 
 }
 
 
 
-void GPRSbee::requestAT(const char *command, byte respMaxNumOflines, long timeOutInMS) {
+void GPRSbee::requestAT(char *command, byte respMaxNumOflines, long timeOutInMS) {
+  
+_debugSerialConnection->print("-> ");
+_debugSerialConnection->println(command);
+  
+  delay(150);
+  
+  serialConnection.flush();
 
   byte numOfCharsReceived = 0;
-  
   byte numOfLines = 0;
-
-  serialConnection.flush(); 
+    
+  long clockTimeOut = millis() + timeOutInMS;
   
   serialConnection.print(command); 
-  serialConnection.print("\r\n");               
-  
-  unsigned long clockTimeOut = millis() + timeOutInMS;
+  serialConnection.print("\r\n");  
   
   while ((millis() < clockTimeOut) && (numOfLines < respMaxNumOflines)) {  
     
@@ -591,7 +676,11 @@ void GPRSbee::requestAT(const char *command, byte respMaxNumOflines, long timeOu
   
   _atRxBuffer[numOfCharsReceived] = '\0';
   
-  while(serialConnection.available() > 0) serialConnection.read(); 
+  delay(150);
+
+  serialConnection.flush();
+  
+_debugSerialConnection->println(_atRxBuffer);
   
 }
 

@@ -1,5 +1,5 @@
 The Open Source Environmental Sensors (OSES) project 
-----------
+---
 
 This project, based on the Arduino and Launchpad / Energia platforms, aims to develop an **autonomous and modular station able to collect and upload to the web, in real time or near real time, data acquired by a wide range of environmental sensors**.
 
@@ -13,13 +13,13 @@ The goals of the project are :
 
 
 Hardware and schematics
-----------
+---
 
 The schematics and bill of materials required to assemble the current prototype can be found in the "hardware" directory. 
 
 
 Code and libraries
-----------
+---
 
 The code of the station controller can be found in the arduino-sketch directory. Take also a look at the librairies/librairies-installation.txt for a quick guide on how to download and install the required librairies.
 

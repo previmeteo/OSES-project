@@ -11,9 +11,11 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2013/11/30
+ * Creation date : 2013/11/28
  *
  * History :
+ *
+ * - 0.5.1 : add of http requests's responses retrieval functions
  * 
  */
  
@@ -39,11 +41,11 @@
 
 #define AT_CSTT_RESP_TIMOUT_IN_MS 5000
 
-#define AT_CIICR_RESP_TIMOUT_IN_MS 10000
+#define AT_CIICR_RESP_TIMOUT_IN_MS 15000
 
 #define AT_CIFSR_RESP_TIMOUT_IN_MS 5000
 
-#define AT_CGATT_RESP_TIMOUT_IN_MS 5000
+#define AT_CGATT_RESP_TIMOUT_IN_MS 10000
 
 #define AT_CIPSTART_RESP_TIMOUT_IN_MS 15000
 
@@ -56,7 +58,7 @@
 #define HTTP_RESP_TIMOUT_IN_MS 60000
 
 
-#define HTTP_POST_FILE_DEFAULT_FORM_FIELD_NAME "uploadedfile"
+#define HTTP_POST_FILE_DEFAULT_FORM_FIELD_NAME "f"
 
 #define HTTP_POST_FILE_BOUNDARY "BOUNDARY"
 
@@ -76,7 +78,7 @@ class GPRSbee {
     
     GPRSbee(byte onOffPin, byte statusPin, byte rxPin, byte txPin, SoftwareSerial *debugSerialConnection);
     
-    void init(unsigned long baudRate);
+    void init(long baudRate);
     
     void powerOn();
    
@@ -86,11 +88,9 @@ class GPRSbee {
     
     boolean isOn();
     
-    void requestAT(const char *command, byte respMaxNumOflines, long timeOutInMS);
+    void requestAT(char *command, byte respMaxNumOflines, long timeOutInMS);
     
     void requestAT(const __FlashStringHelper *commandF, byte respMaxNumOflines, long timeOutInMS);
-    
-    void retrieveIncomingCharsFromLineToLine(char *incomingCharsBuffer, byte incomingCharsBufferLength, byte fromLine, byte toLine, long timeOutInMS);
     
     void activateCommunication();
     
@@ -99,6 +99,8 @@ class GPRSbee {
     void configure();
     
     void enterPINCode(char *pinCode);
+    
+    void retrieveIMEI(char IMEIBuffer[16]);
     
     boolean isRegistered();
     
@@ -120,7 +122,7 @@ class GPRSbee {
     
     void tcpClose();
     
-    void echoHttpRequestInitHeaders(char *serverName, char *serverURL, const char *method);
+    void echoHttpRequestInitHeaders(char *serverName, char *serverURL, char *method);
     
     void echoHttpPostURLEncodedRequestAdditionalHeaders(long encodedDataLength);
     
@@ -134,6 +136,11 @@ class GPRSbee {
     
     boolean httpPostTextFile(char *serverName, char *serverPort, char *serverURL, char *fileContent, byte maxNumConnectAttempts);
     
+    void retrieveIncomingCharsFromLineToLine(char *incomingCharsBuffer, byte incomingCharsBufferLength, byte fromLine, byte toLine, long timeOutInMS);
+    
+    void retrieveHttpResponseStatusLine(char *httpResponseStatusLineBuffer, byte httpResponseStatusLineBufferLength, long timeOutInMS);
+    
+    void retrieveHttpResponseBodyFromLineToLine(char *httpResponseBodyBuffer, byte httpResponseBodyBufferLength, byte fromLine, byte toLine, long timeOutInMS);
 
   private:
     
