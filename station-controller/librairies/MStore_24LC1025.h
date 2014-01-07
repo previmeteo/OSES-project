@@ -1,7 +1,7 @@
 /*
  * File : MStore_24LC1025.h
  *
- * Version : 0.5.0
+ * Version : 0.5.1
  *
  * Purpose : 24LC1025 EEPROM "store" interface library for Arduino
  *
@@ -11,9 +11,11 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2013/10/30
+ * Creation date : 2014/01/06
  *
  * History :
+ *
+ * - 0.5.1 : getWritesCount() bug fix
  * 
  */
 

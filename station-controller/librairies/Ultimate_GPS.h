@@ -1,7 +1,7 @@
 /*
  * File : Ultimate_GPS.h
  *
- * Version : 0.5.0
+ * Version : 0.5.1
  *
  * Purpose : Ultimate GPS V3 interface library for Arduino
  *
@@ -11,9 +11,11 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2013/10/08
+ * Creation date : 2013/12/12
  *
  * History :
+ *
+ * - 0.5.1 : GPS altitude determination bug fix
  * 
  */
 
@@ -37,10 +39,10 @@
 
 struct Position {
   
-  float latitude;                   // decimal degrees
-  float longitude;                  // decimal degrees
-  float heightAboveEllipsoid;       // meters
-  float relativeAccuracy;           // meters
+  float latitude;                             // decimal degrees
+  float longitude;                            // decimal degrees
+  float altitudeAboveMSL;                     // meters
+  float horizontalDilutionOfPrecision;        
   
   byte fix_Y_utc;
   byte fix_M_utc;

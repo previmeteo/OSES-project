@@ -1,7 +1,7 @@
 /*
  * File : GPRSbee.h
  *
- * Version : 0.5.0
+ * Version : 0.5.1
  *
  * Purpose : GPRSBEE modem interface library for Arduino
  *
@@ -15,7 +15,7 @@
  *
  * History :
  *
- * - 0.5.1 : add of http requests's responses retrieval functions
+ * - 0.5.1 : addition of http requests response retrieval functions
  * 
  */
  
@@ -91,6 +91,8 @@ class GPRSbee {
     void requestAT(char *command, byte respMaxNumOflines, long timeOutInMS);
     
     void requestAT(const __FlashStringHelper *commandF, byte respMaxNumOflines, long timeOutInMS);
+    
+    boolean isAtRXBufferEmpty();
     
     void activateCommunication();
     

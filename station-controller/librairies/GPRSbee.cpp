@@ -15,7 +15,7 @@
  *
  * History :
  *
- * - 0.5.1 : add of http requests's responses retrieval functions
+ * - 0.5.1 : addition of http requests response retrieval functions
  * 
  */
  
@@ -241,7 +241,7 @@ boolean GPRSbee::isGPRSAttached() {
   
   requestAT(F("AT+CGATT?"), 2, AT_DEFAULT_RESP_TIMOUT_IN_MS);
     
-  if(strstr(_atRxBuffer, ": 1") != NULL) GPRSAttached = true;        // expected response : "+CGATT: 1"
+  if(strstr(_atRxBuffer, ": 1") != NULL) GPRSAttached = true;        // expected response : "+CGATT: 1"  
   
   return GPRSAttached;
 
@@ -644,8 +644,8 @@ void GPRSbee::retrieveHttpResponseBodyFromLineToLine(char *httpResponseBodyBuffe
 
 void GPRSbee::requestAT(char *command, byte respMaxNumOflines, long timeOutInMS) {
   
-_debugSerialConnection->print("-> ");
-_debugSerialConnection->println(command);
+  // _debugSerialConnection->print("-> ");
+  // _debugSerialConnection->println(command);
   
   delay(150);
   
@@ -680,7 +680,7 @@ _debugSerialConnection->println(command);
 
   serialConnection.flush();
   
-_debugSerialConnection->println(_atRxBuffer);
+  // _debugSerialConnection->println(_atRxBuffer);
   
 }
 
@@ -703,5 +703,26 @@ void GPRSbee::requestAT(const __FlashStringHelper *commandF, byte respMaxNumOfli
   requestAT(command, respMaxNumOflines, timeOutInMS);
   
 }
+
+
+
+
+boolean GPRSbee::isAtRXBufferEmpty() {
+
+  boolean isEmpty = true;
+
+  byte numChars = 0;
+  while(_atRxBuffer[numChars] != '\0') numChars++;
+  
+  if(numChars) isEmpty = false;
+  
+  return isEmpty;
+
+}
+
+
+
+
+
 
 

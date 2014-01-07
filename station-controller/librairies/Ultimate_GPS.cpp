@@ -1,7 +1,7 @@
 /*
  * File : Ultimate_GPS.cpp
  *
- * Version : 0.5.0
+ * Version : 0.5.1
  *
  * Purpose : Ultimate GPS V3 (http://www.adafruit.com) interface library for Arduino
  *
@@ -11,9 +11,11 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2013/10/08
+ * Creation date : 2013/12/12
  *
  * History :
+ *
+ * - 0.5.1 : GPS altitude determination bug fix
  * 
  */
 
@@ -118,7 +120,7 @@ boolean UltimateGPS::acquireNewPosition(float accuracyLimit, int timeoutInS) {
   
   char stringBuffer[12];
   
-  float relativeAccuracy;
+  float horizontalDilutionOfPrecision;
   
   byte currentDate_Y = 0;
   byte currentDate_M = 0;
@@ -169,7 +171,9 @@ boolean UltimateGPS::acquireNewPosition(float accuracyLimit, int timeoutInS) {
     
     // specific treatments according to the NMEA sentence type
     
-    if(newNMEASentenceReceived) {     
+    if(newNMEASentenceReceived) {   
+    
+      // _debugSerialConnection->println(gpsRxBuffer);
 
       if(strstr(gpsRxBuffer, "GPRMC") != NULL) {      
         
@@ -193,18 +197,18 @@ boolean UltimateGPS::acquireNewPosition(float accuracyLimit, int timeoutInS) {
       else if(strstr(gpsRxBuffer, "GPGGA") != NULL) {      
         
         // sentence type is GPGGA
-    
+
         getFieldContentFromNMEASentence(gpsRxBuffer, stringBuffer, 6);                  // stringBuffer -> fix quality string
         
         if((stringBuffer[0] == '1') or (stringBuffer[0] == '2')) {
         
-          getFieldContentFromNMEASentence(gpsRxBuffer, stringBuffer, 8);                // stringBuffer -> relative accuracy string
+          getFieldContentFromNMEASentence(gpsRxBuffer, stringBuffer, 8);                // stringBuffer -> horizontal dilution of precision
        
           if(strlen(stringBuffer) > 0) {
            
-            relativeAccuracy = (float) atof(stringBuffer);
+            horizontalDilutionOfPrecision = (float) atof(stringBuffer);
             
-            if((relativeAccuracy > 0) and (relativeAccuracy < accuracyLimit)) newPositionAcquired = true;
+            if((horizontalDilutionOfPrecision > 0) and (horizontalDilutionOfPrecision < accuracyLimit)) newPositionAcquired = true;
             
           }
           
@@ -251,13 +255,13 @@ boolean UltimateGPS::acquireNewPosition(float accuracyLimit, int timeoutInS) {
           if(stringBuffer[0] == 'W') position.longitude = -position.longitude;
          
           
-          // heightAboveEllipsoid
+          // altitudeAboveMSL
           
-          getFieldContentFromNMEASentence(gpsRxBuffer, stringBuffer, 11);              
+          getFieldContentFromNMEASentence(gpsRxBuffer, stringBuffer, 9);              
           
-          position.heightAboveEllipsoid = (float) atof(stringBuffer);        
+          position.altitudeAboveMSL = (float) atof(stringBuffer);        
           
-          position.relativeAccuracy = relativeAccuracy;
+          position.horizontalDilutionOfPrecision = horizontalDilutionOfPrecision;
    
   
           if(!firstPositionAcquired) firstPositionAcquired = true;
@@ -375,8 +379,3 @@ char UltimateGPS::hexCharToChar(char n) {
     else return -1;   
 }
     
-    
-
-
-
-

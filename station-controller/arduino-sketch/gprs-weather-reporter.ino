@@ -78,9 +78,9 @@
 // GPS acquisition parameters
 
 #define GPS_FIRST_ACQUISITION_TIMEOUT_IN_SECONDS 300
-#define GPS_FIRST_ACQUISITION_ACCURACY_LIMIT_IN_METERS 10.0
+#define GPS_FIRST_ACQUISITION_HDOP_LIMIT 10
 #define GPS_ACQUISITION_TIMEOUT_IN_SECONDS 160
-#define GPS_ACQUISITION_ACCURACY_LIMIT_IN_METERS 10.0
+#define GPS_ACQUISITION_HDOP_LIMIT 10
 
 
 // GPRS connection parameters
@@ -193,7 +193,7 @@ void setup()  {
   
   while(1) {
     
-    firstPositionAcquired = acquireCurrentPosition_gpsOnOff(GPS_FIRST_ACQUISITION_ACCURACY_LIMIT_IN_METERS, GPS_FIRST_ACQUISITION_TIMEOUT_IN_SECONDS);
+    firstPositionAcquired = acquireCurrentPosition_gpsOnOff(GPS_FIRST_ACQUISITION_HDOP_LIMIT, GPS_FIRST_ACQUISITION_TIMEOUT_IN_SECONDS);
     
     if(firstPositionAcquired) {
       break;
@@ -433,7 +433,7 @@ void executeScheduledTask() {
   
   else if(nextTaskID == TASK_GPS_ACQUIRE_POSITION_POWER_ON_POWER_OFF) {
     
-    success = acquireCurrentPosition_gpsOnOff(GPS_ACQUISITION_ACCURACY_LIMIT_IN_METERS, GPS_ACQUISITION_TIMEOUT_IN_SECONDS);
+    success = acquireCurrentPosition_gpsOnOff(GPS_ACQUISITION_HDOP_LIMIT, GPS_ACQUISITION_TIMEOUT_IN_SECONDS);
     
   }
   
@@ -614,7 +614,7 @@ boolean readSensorsAndStoreReport() {
       
     strcat(report, sep);
       
-    strcat(report, itoa(gps.position.heightAboveEllipsoid, numToCharsBuffer, 10)); 
+    strcat(report, itoa(gps.position.altitudeAboveMSL, numToCharsBuffer, 10)); 
     
   }
   
@@ -946,17 +946,16 @@ boolean httpPostStoredReports(int maxNumOfReportsToBeSent) {
         }
           
         
-       // server's response interpretation
-
-
-        modem.retrieveIncomingCharsFromLineToLine(incomingCharsBuffer, sizeof(incomingCharsBuffer), 0, 0, 90000);     // the timeout must be long enough for the server to respond after the "ingestion" of tens of reports
+       // server's response interpretation        
+        
+        modem.retrieveHttpResponseStatusLine(incomingCharsBuffer, sizeof(incomingCharsBuffer), 90000);    // the timeout must be long enough for the server to respond after the "ingestion" of tens of reports
         
         if(strstr(incomingCharsBuffer, "200") != NULL) success = true;
                 
         modem.tcpClose();
         
         
-        // in case of success, we delete the corresponding reports in the store
+        // if success, we delete the corresponding reports in the store
          
         if(success) {
           

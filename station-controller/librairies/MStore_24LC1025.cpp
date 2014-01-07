@@ -1,7 +1,7 @@
 /*
  * File : MStore_24LC1025.cpp
  *
- * Version : 0.5.0
+ * Version : 0.5.1
  *
  * Purpose : 24LC1025 EEPROM "store" interface library for Arduino
  *
@@ -11,9 +11,11 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2013/10/08
+ * Creation date : 2014/01/06
  *
  * History :
+ *
+ * - 0.5.1 : getWritesCount() bug fix
  * 
  */
  
@@ -41,7 +43,7 @@ void MStore_24LC1025::init() {
 
   for(int pageIndex = 0 ; pageIndex < 1024 ; pageIndex++) {
   
-    long writesCount = getWritesCount(pageIndex);
+    unsigned long writesCount = getWritesCount(pageIndex);
     
     if(writesCount == 0xFFFFFF) smashPage(pageIndex);     // here we have a page which has never been written before
                                                           //  (if of course we use a new chip !)
@@ -92,8 +94,8 @@ unsigned long MStore_24LC1025::getWritesCount(int pageIndex) {
  
   Wire.requestFrom((int) twiAddress, 3);
   
-  writesCount = (Wire.read() << 16) +  (Wire.read() << 8) + Wire.read();
-    
+  writesCount = ((unsigned long) Wire.read() << 16) +  ((unsigned long) Wire.read() << 8) + Wire.read();
+  
   return writesCount;
   
 }
@@ -124,7 +126,7 @@ boolean MStore_24LC1025::writeMessage(int pageIndex, char* message) {
 
   boolean canWriteInPage = true;
   
-  long writesCount = getWritesCount(pageIndex);
+  unsigned long writesCount = getWritesCount(pageIndex);
   
   if(writesCount > MAX_NUM_WRITES_PER_PAGE) canWriteInPage = false;
   
@@ -327,6 +329,9 @@ void MStore_24LC1025::clearAllPages() {
      
 void MStore_24LC1025::smashPage(int pageIndex) {
 
+  // Serial.print("smashing page : ");
+  // Serial.println(pageIndex);
+
   byte twiAddress = getTwiAddress(pageIndex);
   unsigned int pageStartAddress = getPageStartAddress(pageIndex);
   
@@ -356,12 +361,12 @@ void MStore_24LC1025::smashPage(int pageIndex) {
 
 
 
+
 void MStore_24LC1025::smashAllPages() {
 
   for(int pageIndex = 0 ; pageIndex < 1024 ; pageIndex++) smashPage(pageIndex);
 
 }
-
 
 
 
@@ -404,7 +409,7 @@ void MStore_24LC1025::dumpPageHuman(int pageIndex) {
   byte twiAddress = getTwiAddress(pageIndex);
   unsigned int pageStartAddress = getPageStartAddress(pageIndex);
   
-  long writesCount = getWritesCount(pageIndex);
+  unsigned long writesCount = getWritesCount(pageIndex);
   
   Serial.print(writesCount);
   Serial.print(" : ");
