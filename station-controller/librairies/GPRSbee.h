@@ -1,9 +1,9 @@
 /*
  * File : GPRSbee.h
  *
- * Version : 0.5.1
+ * Version : 0.8.0
  *
- * Purpose : GPRSBEE modem interface library for Arduino
+ * Purpose : GPRSBEE modem (http://www.gprsbee.com) interface library for Arduino
  *
  * Author : Previmeteo (www.previmeteo.com)
  *
@@ -11,11 +11,7 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2013/11/28
- *
- * History :
- *
- * - 0.5.1 : addition of http requests response retrieval functions
+ * Creation date : 2014/01/29
  * 
  */
  
@@ -27,12 +23,15 @@
 
 
 #include "Arduino.h"
+
 #include "SoftwareSerial.h"
 
 
 
-
 #define AT_RX_BUFFER_SIZE 60
+
+
+# define DEBUG_MODE true
 
 
 #define AT_INIT_RESP_TIMOUT_IN_MS 3000
@@ -153,6 +152,8 @@ class GPRSbee {
     byte _statusPin;
     
     SoftwareSerial *_debugSerialConnection;
+    
+    boolean _debugSerialConnectionEnabled;
     
     void togglePowerState();
 

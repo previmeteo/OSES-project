@@ -1,7 +1,7 @@
 /*
  * File : GPRSbee.cpp
  *
- * Version : 0.5.1
+ * Version : 0.8.0
  *
  * Purpose : GPRSBEE modem (http://www.gprsbee.com) interface library for Arduino
  *
@@ -11,11 +11,7 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2013/11/28
- *
- * History :
- *
- * - 0.5.1 : addition of http requests response retrieval functions
+ * Creation date : 2014/01/29
  * 
  */
  
@@ -33,6 +29,7 @@ GPRSbee::GPRSbee(byte onOffPin, byte statusPin, byte rxPin, byte txPin):serialCo
     
   _onOffPin = onOffPin;
   _statusPin = statusPin;
+  _debugSerialConnectionEnabled = false;
   
 }
 
@@ -42,6 +39,7 @@ GPRSbee::GPRSbee(byte onOffPin, byte statusPin, byte rxPin, byte txPin, Software
     
   _onOffPin = onOffPin;
   _statusPin = statusPin;
+  _debugSerialConnectionEnabled = true;
   
   _debugSerialConnection = debugSerialConnection;
   
@@ -644,8 +642,13 @@ void GPRSbee::retrieveHttpResponseBodyFromLineToLine(char *httpResponseBodyBuffe
 
 void GPRSbee::requestAT(char *command, byte respMaxNumOflines, long timeOutInMS) {
   
-  // _debugSerialConnection->print("-> ");
-  // _debugSerialConnection->println(command);
+  
+  if(DEBUG_MODE and _debugSerialConnectionEnabled) {
+  
+    _debugSerialConnection->print("-> ");
+    _debugSerialConnection->println(command);
+  
+  }
   
   delay(150);
   
@@ -680,7 +683,12 @@ void GPRSbee::requestAT(char *command, byte respMaxNumOflines, long timeOutInMS)
 
   serialConnection.flush();
   
-  // _debugSerialConnection->println(_atRxBuffer);
+  
+  if(DEBUG_MODE and _debugSerialConnectionEnabled) {
+  
+    _debugSerialConnection->println(_atRxBuffer);
+  
+  }
   
 }
 
@@ -696,7 +704,7 @@ void GPRSbee::requestAT(const __FlashStringHelper *commandF, byte respMaxNumOfli
   
   char command[commandLength+1];
   
-  memcpy_P(command, commandF, commandLength);
+  memcpy_P(command, commandF, (commandLength + 1));
   
   command[commandLength] = '\0';
   

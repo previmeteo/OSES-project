@@ -1,7 +1,7 @@
 /*
  * File : Ultimate_GPS.cpp
  *
- * Version : 0.5.1
+ * Version : 0.8.0
  *
  * Purpose : Ultimate GPS V3 (http://www.adafruit.com) interface library for Arduino
  *
@@ -11,11 +11,7 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2013/12/12
- *
- * History :
- *
- * - 0.5.1 : GPS altitude determination bug fix
+ * Creation date : 2014/01/29
  * 
  */
 
@@ -35,6 +31,8 @@ UltimateGPS::UltimateGPS(HardwareSerial *gpsSerialConnection, byte onOffPin) {
   
   _onOffPin = onOffPin;
   
+  _debugSerialConnectionEnabled = false;
+  
   firstPositionAcquired = false;
   
 }
@@ -48,6 +46,8 @@ UltimateGPS::UltimateGPS(HardwareSerial *gpsSerialConnection, byte onOffPin, Sof
   _onOffPin = onOffPin;
   
   _debugSerialConnection = debugSerialConnection;
+  
+  _debugSerialConnectionEnabled = true;
   
   firstPositionAcquired = false;
   
@@ -173,8 +173,8 @@ boolean UltimateGPS::acquireNewPosition(float accuracyLimit, int timeoutInS) {
     
     if(newNMEASentenceReceived) {   
     
-      // _debugSerialConnection->println(gpsRxBuffer);
-
+      if(DEBUG_MODE and _debugSerialConnectionEnabled) _debugSerialConnection->println(gpsRxBuffer);
+      
       if(strstr(gpsRxBuffer, "GPRMC") != NULL) {      
         
         // sentence type is GPRMC

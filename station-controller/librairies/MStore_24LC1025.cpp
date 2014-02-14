@@ -1,7 +1,7 @@
 /*
  * File : MStore_24LC1025.cpp
  *
- * Version : 0.5.1
+ * Version : 0.8.0
  *
  * Purpose : 24LC1025 EEPROM "store" interface library for Arduino
  *
@@ -11,12 +11,8 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2014/01/06
+ * Creation date : 2014/01/29
  *
- * History :
- *
- * - 0.5.1 : getWritesCount() bug fix
- * 
  */
  
  
@@ -124,19 +120,25 @@ byte MStore_24LC1025::getMessageLength(int pageIndex) {
   
 boolean MStore_24LC1025::writeMessage(int pageIndex, char* message) {
 
+
+  boolean messageWritten = false;
+  
+  
+  byte messageLength = 0;
+  while(message[messageLength] != '\0') messageLength++;
+    
+
   boolean canWriteInPage = true;
   
   unsigned long writesCount = getWritesCount(pageIndex);
   
   if(writesCount > MAX_NUM_WRITES_PER_PAGE) canWriteInPage = false;
   
-  if(canWriteInPage) {
+  
+  if(canWriteInPage and messageLength < 125) {
   
     byte twiAddress = getTwiAddress(pageIndex);
     unsigned int pageStartAddress = getPageStartAddress(pageIndex);
-  
-    byte messageLength = 0;
-    while(message[messageLength] != '\0') messageLength++;
   
     // writesCount update (value stored in the 3 first bytes of the page)
   
@@ -171,6 +173,7 @@ boolean MStore_24LC1025::writeMessage(int pageIndex, char* message) {
     // message writing 
       
     for(byte i = 0 ; i < 124 ; i ++) {
+
     
       if((i % MAX_CHUNK_SIZE) == 0) {                                           // start of chunk
       
@@ -184,7 +187,7 @@ boolean MStore_24LC1025::writeMessage(int pageIndex, char* message) {
     
       else Wire.write(0);
        
-      if(((i % MAX_CHUNK_SIZE) == (MAX_CHUNK_SIZE - 1)) || (i == 126)) {            // end of chunk 
+      if(((i % MAX_CHUNK_SIZE) == (MAX_CHUNK_SIZE - 1)) || (i == messageLength) || (i == 123)) {            // end of chunk 
       
         Wire.endTransmission();
         delay(10); 
@@ -192,10 +195,13 @@ boolean MStore_24LC1025::writeMessage(int pageIndex, char* message) {
       }
     
     }
+    
+    
+    messageWritten = true;
   
   }
   
-  return canWriteInPage;
+  return messageWritten;
   
 }
     

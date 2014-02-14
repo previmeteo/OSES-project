@@ -1,7 +1,7 @@
 /*
  * File : Ultimate_GPS.h
  *
- * Version : 0.5.1
+ * Version : 0.8.0
  *
  * Purpose : Ultimate GPS V3 interface library for Arduino
  *
@@ -11,11 +11,7 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2013/12/12
- *
- * History :
- *
- * - 0.5.1 : GPS altitude determination bug fix
+ * Creation date : 2014/01/29
  * 
  */
 
@@ -34,6 +30,8 @@
 
 #define GPS_NMEA_SENTENCE_BUFFER_SIZE 100
 
+
+# define DEBUG_MODE true
 
 
 
@@ -86,6 +84,8 @@ class UltimateGPS {
     byte _onOffPin;
     
     SoftwareSerial *_debugSerialConnection;
+    
+    boolean _debugSerialConnectionEnabled;
     
     void getFieldContentFromNMEASentence(char *nmeaSentence, char *fieldData, byte fieldIndex);
     
