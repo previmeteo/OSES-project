@@ -1,7 +1,7 @@
 /*
  * File : GPRSbee.h
  *
- * Version : 0.8.0
+ * Version : 0.8.1
  *
  * Purpose : GPRSBEE modem (http://www.gprsbee.com) interface library for Arduino
  *
@@ -32,7 +32,7 @@
 
 
 
-#define AT_RX_BUFFER_SIZE 60
+#define AT_RX_BUFFER_SIZE 61
 
 
 # define DEBUG_MODE true

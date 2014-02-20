@@ -1,9 +1,9 @@
 /*
  * File : Ultimate_GPS.h
  *
- * Version : 0.8.0
+ * Version : 0.8.1
  *
- * Purpose : Ultimate GPS V3 interface library for Arduino
+ * Purpose : Ultimate GPS V3 (http://www.adafruit.com) interface library for Arduino
  *
  * Author : Previmeteo (www.previmeteo.com)
  *
@@ -11,7 +11,11 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2014/01/29
+ * Creation date : 2014/02/20
+ *
+ * History :
+ *
+ * - 0.8.1 : bug fixes in the acquireNewPosition() and getFieldContentFromNMEASentence() methods
  * 
  */
 
@@ -28,7 +32,7 @@
 
 
 
-#define GPS_NMEA_SENTENCE_BUFFER_SIZE 100
+#define GPS_NMEA_SENTENCE_BUFFER_SIZE 101
 
 
 # define DEBUG_MODE true

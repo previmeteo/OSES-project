@@ -666,7 +666,7 @@ void GPRSbee::requestAT(char *command, byte respMaxNumOflines, long timeOutInMS)
   serialConnection.print(command); 
   serialConnection.print("\r\n");  
   
-  while ((millis() < clockTimeOut) && (numOfCharsReceived < AT_RX_BUFFER_SIZE) && (numOfLines < respMaxNumOflines)) {  
+  while ((millis() < clockTimeOut) && (numOfCharsReceived < (AT_RX_BUFFER_SIZE - 1)) && (numOfLines < respMaxNumOflines)) {  
     
     if(serialConnection.available() > 0) {
        

@@ -1,7 +1,7 @@
 /*
  * File : Ultimate_GPS.cpp
  *
- * Version : 0.8.0
+ * Version : 0.8.1
  *
  * Purpose : Ultimate GPS V3 (http://www.adafruit.com) interface library for Arduino
  *
@@ -11,7 +11,11 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2014/01/29
+ * Creation date : 2014/02/20
+ *
+ * History :
+ *
+ * - 0.8.1 : bug fixes in the acquireNewPosition() and getFieldContentFromNMEASentence() methods
  * 
  */
 
@@ -140,7 +144,7 @@ boolean UltimateGPS::acquireNewPosition(float accuracyLimit, int timeoutInS) {
 
     lineReadStartMS = millis();  
     
-    while((numOfCharsReceived < GPS_NMEA_SENTENCE_BUFFER_SIZE) and !newLineReceived) {
+    while((numOfCharsReceived < (GPS_NMEA_SENTENCE_BUFFER_SIZE - 1)) and !newLineReceived) {
       
       while((millis() - lineReadStartMS < 1500) and !Serial.available());   
       
@@ -296,7 +300,7 @@ void UltimateGPS::getFieldContentFromNMEASentence(char *nmeaSentence, char *fiel
   byte fieldStartIndex = 0;
   byte fieldDataLength = sizeof(nmeaSentence) - 1;
   
-  while((nmeaSentence[charIndex] != '\0') and (charIndex < GPS_NMEA_SENTENCE_BUFFER_SIZE) and (!fieldFound)) {
+  while((nmeaSentence[charIndex] != '\0') and (charIndex < (GPS_NMEA_SENTENCE_BUFFER_SIZE - 1)) and (!fieldFound)) {
     
     if(nmeaSentence[charIndex] == fieldDelimiter) {
       
