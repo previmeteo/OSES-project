@@ -1,7 +1,7 @@
 /*
  * File : GPRSbee.cpp
  *
- * Version : 0.8.0
+ * Version : 0.8.1
  *
  * Purpose : GPRSBEE modem (http://www.gprsbee.com) interface library for Arduino
  *
@@ -11,7 +11,11 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2014/01/29
+ * Creation date : 2014/02/20
+ *
+ * History :
+ * 
+ * - 0.8.1 : bug fix in the requestAT() method
  * 
  */
  
@@ -551,7 +555,7 @@ void GPRSbee::retrieveIncomingCharsFromLineToLine(char *incomingCharsBuffer, byt
   
   while((millis() < clockTimeOut) && (serialConnection.available() <= 0)) delay(100);
     
-  while((millis() < clockTimeOut) && (numOfLines <= toLine) && (numOfCharsReceived < (incomingCharsBufferLength - 1))) {         
+  while((millis() < clockTimeOut) && (numOfCharsReceived < (incomingCharsBufferLength - 1)) && (numOfLines <= toLine)) {         
       
     if(serialConnection.available() > 0) {
          
@@ -662,7 +666,7 @@ void GPRSbee::requestAT(char *command, byte respMaxNumOflines, long timeOutInMS)
   serialConnection.print(command); 
   serialConnection.print("\r\n");  
   
-  while ((millis() < clockTimeOut) && (numOfLines < respMaxNumOflines)) {  
+  while ((millis() < clockTimeOut) && (numOfCharsReceived < AT_RX_BUFFER_SIZE) && (numOfLines < respMaxNumOflines)) {  
     
     if(serialConnection.available() > 0) {
        

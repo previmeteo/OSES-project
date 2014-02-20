@@ -112,7 +112,7 @@ boolean UltimateGPS::acquireNewPosition(float accuracyLimit, int timeoutInS) {
   
   char gpsRxBuffer[GPS_NMEA_SENTENCE_BUFFER_SIZE];
   
-  byte numOfCharReceived; 
+  byte numOfCharsReceived; 
   
   boolean newLineReceived;
   
@@ -136,21 +136,21 @@ boolean UltimateGPS::acquireNewPosition(float accuracyLimit, int timeoutInS) {
   
     newLineReceived = false;
     
-    numOfCharReceived = 0;  
+    numOfCharsReceived = 0;  
 
     lineReadStartMS = millis();  
     
-    while((numOfCharReceived < GPS_NMEA_SENTENCE_BUFFER_SIZE) and !newLineReceived) {
+    while((numOfCharsReceived < GPS_NMEA_SENTENCE_BUFFER_SIZE) and !newLineReceived) {
       
       while((millis() - lineReadStartMS < 1500) and !Serial.available());   
       
       char c = Serial.read();
       
-      gpsRxBuffer[numOfCharReceived] = c;
+      gpsRxBuffer[numOfCharsReceived] = c;
       
       if(c == '\n') newLineReceived = true;
       
-      numOfCharReceived++;
+      numOfCharsReceived++;
       
     } 
     
@@ -161,8 +161,8 @@ boolean UltimateGPS::acquireNewPosition(float accuracyLimit, int timeoutInS) {
     
     if(newLineReceived) {
       
-      gpsRxBuffer[numOfCharReceived - 2] = '\0';
-      gpsRxBuffer[numOfCharReceived - 1] = '\0';
+      gpsRxBuffer[numOfCharsReceived - 2] = '\0';
+      gpsRxBuffer[numOfCharsReceived - 1] = '\0';
       
       newNMEASentenceReceived = isSentenceChecksumOK(gpsRxBuffer);
       

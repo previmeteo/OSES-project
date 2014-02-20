@@ -11,7 +11,11 @@
  *
  * License: GNU GPL v2 (see License.txt)
  *
- * Creation date : 2014/01/29
+ * Creation date : 2014/02/20
+ *
+ * History :
+ * 
+ * - 0.8.1 : bug fix in the requestAT() method
  * 
  */
  
